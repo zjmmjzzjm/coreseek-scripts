@@ -21,7 +21,13 @@ import argparse
 
 def parse_mmseg_dict(dictPath):
     with open(dictPath, 'r') as f:
-        return set(map(lambda x: x.strip(), filter(lambda x: x.strip()[0] != 'x', f)))
+        s = set(map(lambda x: x.strip(), filter(lambda x: x.strip()[0] != 'x', f)))
+        d = dict()
+        for k in s:
+           keyword = k.split()[0]
+           value = k.split()[1]
+           d[keyword]=value
+        return d
 
 if __name__ == '__main__':
     argParser = argparse.ArgumentParser(description=u'合并libmmseg中文字典文件，不检查词典文件格式。')
@@ -40,8 +46,8 @@ if __name__ == '__main__':
     numOmittedWords = mainWordSetLen + secondWordSetLen - numMergedWords
 
     with open(args.output, 'w') as f:
-        for word in mainWordSet:
-            f.write('{}\nx:1\n'.format(word))
+        for word,v in mainWordSet.items():
+            f.write('{0}\t{1}\nx:{1}\n'.format(word, v))
     print(u'成功合并2个词典文件 {}({}) + {}({}) =>  {}({})'.format(
         args.mainDict, mainWordSetLen, args.secondDict, secondWordSetLen, args.output, numMergedWords))
     if (0 != numOmittedWords):
